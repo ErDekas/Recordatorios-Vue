@@ -3,11 +3,23 @@
     <div class="auth-box">
       <h2 class="auth-title">{{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}</h2>
 
-      <!-- Botón de Google -->
-      <button @click="signInWithGoogle" class="google-button">
-        <img src="https://www.google.com/favicon.ico" alt="Google" class="google-icon" />
-        Continuar con Google
-      </button>
+      <!-- Botones de redes sociales -->
+      <div class="social-buttons">
+        <button @click="signInWithGoogle" class="social-button google-button">
+          <img src="https://www.google.com/favicon.ico" alt="Google" class="social-icon" />
+          Continuar con Google
+        </button>
+
+        <button @click="signInWithFacebook" class="social-button facebook-button">
+          <img src="https://www.facebook.com/favicon.ico" alt="Facebook" class="social-icon" />
+          Continuar con Facebook
+        </button>
+
+        <button @click="signInWithGithub" class="social-button github-button">
+          <img src="https://github.com/favicon.ico" alt="GitHub" class="social-icon" />
+          Continuar con GitHub
+        </button>
+      </div>
 
       <div class="divider">
         <span>o</span>
@@ -44,6 +56,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
+  FacebookAuthProvider,
+  GithubAuthProvider,
   signInWithPopup,
 } from 'firebase/auth'
 
@@ -57,6 +71,24 @@ export default {
     const signInWithGoogle = async () => {
       try {
         const provider = new GoogleAuthProvider()
+        await signInWithPopup(auth, provider)
+      } catch (err) {
+        error.value = err.message
+      }
+    }
+
+    const signInWithFacebook = async () => {
+      try {
+        const provider = new FacebookAuthProvider()
+        await signInWithPopup(auth, provider)
+      } catch (err) {
+        error.value = err.message
+      }
+    }
+
+    const signInWithGithub = async () => {
+      try {
+        const provider = new GithubAuthProvider()
         await signInWithPopup(auth, provider)
       } catch (err) {
         error.value = err.message
@@ -82,6 +114,8 @@ export default {
       isLogin,
       handleSubmit,
       signInWithGoogle,
+      signInWithFacebook,
+      signInWithGithub,
       error,
     }
   },
@@ -115,6 +149,61 @@ export default {
   font-size: 1.5rem;
   font-weight: 600;
   color: #1a1a1a;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.social-button {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.google-button {
+  background-color: white;
+  color: #1a1a1a;
+  border: 1px solid #e2e8f0;
+}
+
+.google-button:hover {
+  background-color: #f8fafc;
+}
+
+.facebook-button {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+}
+
+.facebook-button:hover {
+  background-color: #166fe5;
+}
+
+.github-button {
+  background-color: #24292e;
+  color: white;
+  border: none;
+}
+
+.github-button:hover {
+  background-color: #1b1f23;
+}
+
+.social-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .form-group {
@@ -158,32 +247,6 @@ input:focus {
 
 .auth-button:hover {
   background-color: #4338ca;
-}
-
-.google-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: white;
-  color: #1a1a1a;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.google-button:hover {
-  background-color: #f8fafc;
-}
-
-.google-icon {
-  width: 18px;
-  height: 18px;
 }
 
 .divider {

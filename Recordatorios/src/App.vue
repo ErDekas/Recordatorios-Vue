@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { auth, db } from './firebase'
 import { onAuthStateChanged } from 'firebase/auth'
 import {

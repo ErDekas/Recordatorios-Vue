@@ -1,19 +1,32 @@
-// src/components/AuthForm.vue
 <template>
   <div class="auth-container">
     <div class="auth-box">
-      <h2>{{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}</h2>
+      <h2 class="auth-title">{{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}</h2>
+
+      <!-- Botón de Google -->
+      <button @click="signInWithGoogle" class="google-button">
+        <img src="https://www.google.com/favicon.ico" alt="Google" class="google-icon" />
+        Continuar con Google
+      </button>
+
+      <div class="divider">
+        <span>o</span>
+      </div>
+
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
-          <input type="email" v-model="email" placeholder="Email" required />
+          <label>Email</label>
+          <input type="email" v-model="email" placeholder="nombre@ejemplo.com" required />
         </div>
         <div class="form-group">
-          <input type="password" v-model="password" placeholder="Contraseña" required />
+          <label>Contraseña</label>
+          <input type="password" v-model="password" placeholder="Ingresa tu contraseña" required />
         </div>
         <button type="submit" class="auth-button">
           {{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}
         </button>
       </form>
+
       <p class="toggle-auth">
         {{ isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
         <span @click="isLogin = !isLogin">
@@ -27,23 +40,39 @@
 <script>
 import { ref } from 'vue'
 import { auth } from '../firebase'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth'
 
 export default {
   setup() {
     const email = ref('')
     const password = ref('')
     const isLogin = ref(true)
+    const error = ref('')
+
+    const signInWithGoogle = async () => {
+      try {
+        const provider = new GoogleAuthProvider()
+        await signInWithPopup(auth, provider)
+      } catch (err) {
+        error.value = err.message
+      }
+    }
 
     const handleSubmit = async () => {
+      error.value = ''
       try {
         if (isLogin.value) {
           await signInWithEmailAndPassword(auth, email.value, password.value)
         } else {
           await createUserWithEmailAndPassword(auth, email.value, password.value)
         }
-      } catch (error) {
-        alert(error.message)
+      } catch (err) {
+        error.value = err.message
       }
     }
 
@@ -52,6 +81,8 @@ export default {
       password,
       isLogin,
       handleSubmit,
+      signInWithGoogle,
+      error,
     }
   },
 }
@@ -63,49 +94,132 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f8fafc;
+  padding: 1rem;
 }
 
 .auth-box {
   background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   width: 100%;
   max-width: 400px;
 }
 
+.auth-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4a5568;
 }
 
 input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
   font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .auth-button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #4caf50;
+  background-color: #4f46e5;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+  background-color: #4338ca;
+}
+
+.google-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: white;
+  color: #1a1a1a;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.google-button:hover {
+  background-color: #f8fafc;
+}
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+  padding: 0 1rem;
+  color: #64748b;
+  font-size: 0.875rem;
 }
 
 .toggle-auth {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   text-align: center;
+  color: #64748b;
 }
 
 .toggle-auth span {
-  color: #4caf50;
+  color: #4f46e5;
   cursor: pointer;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.toggle-auth span:hover {
   text-decoration: underline;
 }
 </style>

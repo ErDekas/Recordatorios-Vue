@@ -80,17 +80,8 @@ export default {
     const signInWithFacebook = async () => {
       try {
         const provider = new FacebookAuthProvider()
-        provider.addScope('email') // Asegura que estás obteniendo el correo electrónico del usuario
-        const result = await signInWithPopup(auth, provider)
-
-        const credential = FacebookAuthProvider.credentialFromResult(result)
-        const accessToken = credential.accessToken
-
-        console.log('Inicio de sesión exitoso con Facebook')
-        console.log('Token:', accessToken)
-        console.log('Usuario:', result.user)
+        await signInWithPopup(auth, provider)
       } catch (err) {
-        console.error('Error en el login con Facebook:', err)
         error.value = err.message
       }
     }

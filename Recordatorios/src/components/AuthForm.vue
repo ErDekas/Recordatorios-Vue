@@ -81,6 +81,7 @@ export default {
       try {
         const provider = new FacebookAuthProvider()
         await signInWithPopup(auth, provider)
+        console.log(auth.currentUser)
       } catch (err) {
         error.value = err.message
       }

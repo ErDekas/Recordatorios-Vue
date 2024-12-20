@@ -24,7 +24,7 @@
 <script>
 import { computed } from 'vue'
 import { auth, db } from '../firebase' // Asegúrate de que esta ruta es correcta
-import { doc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore'
 
 export default {
   props: {
@@ -64,6 +64,13 @@ export default {
 
       try {
         const todoRef = doc(db, props.collectionName, props.todo.id)
+        const docSnap = await getDoc(todoRef)
+
+        if (!docSnap.exists()) {
+          console.error('El documento no existe:', props.todo.id)
+          return
+        }
+
         await updateDoc(todoRef, {
           completed: !props.todo.completed,
           updatedAt: new Date(),

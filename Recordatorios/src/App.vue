@@ -3,41 +3,24 @@
     <AuthForm v-if="!user" />
 
     <div v-else class="container">
-      <div class="header">
-        <h1>Proyecto Vue.js - Pablo Linares</h1>
-        <button @click="handleLogout" class="logout-btn">Cerrar sesión</button>
-      </div>
+      <HeaderComponent @logout="handleLogout" />
 
-      <div class="input-container">
-        <input
-          type="text"
-          v-model="newTodo"
-          placeholder="¿Qué quieres recordar?"
-          @keyup.enter="addTodo"
-        />
-      </div>
+      <TodoInput @add-todo="addTodo" />
 
-      <div class="stats">
-        <span>{{ pendingCount }} Tareas pendientes de un total de {{ todos.length }}</span>
-        <span class="clear-completed" @click="clearCompleted">✕ Borrar tareas completadas</span>
-      </div>
+      <TodoStats 
+        :pending-count="pendingCount"
+        :total-count="todos.length"
+        @clear-completed="clearCompleted"
+      />
 
-      <div id="todo-list">
-        <TodoItem
-          v-for="(todo, index) in sortedTodos"
-          :key="index"
-          :todo="todo"
-          @toggle-complete="toggleComplete(todo)"
-          @change-priority="changePriority(todo)"
-          @delete-todo="deleteTodo(todo)"
-        />
-      </div>
+      <TodoList
+        :todos="sortedTodos"
+        @toggle-complete="toggleComplete"
+        @change-priority="changePriority"
+        @delete-todo="deleteTodo"
+      />
 
-      <div class="footer">
-        Desarrollado por "Pablo Linares".<br />
-        Código disponible en
-        <a href="https://github.com/ErDekas/Recordatorios-Vue" target="_blank">GitHub</a>.
-      </div>
+      <FooterComponent />
     </div>
   </div>
 </template>
@@ -56,20 +39,26 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore'
-import TodoItem from './components/TodoItem.vue'
 import AuthForm from './components/AuthForm.vue'
+import HeaderComponent from './components/HeaderComponent.vue'
+import FooterComponent from './components/FooterComponent.vue'
+import TodoInput from './components/TodoInput.vue'
+import TodoStats from './components/TodoStats.vue'
+import TodoList from './components/TodoList.vue'
 
 export default {
   components: {
-    TodoItem,
     AuthForm,
+    HeaderComponent,
+    FooterComponent,
+    TodoInput,
+    TodoStats,
+    TodoList,
   },
   setup() {
     const user = ref(null)
     const todos = ref([])
-    const newTodo = ref('')
 
-    // Auth state observer
     onMounted(() => {
       onAuthStateChanged(auth, (currentUser) => {
         user.value = currentUser
@@ -87,7 +76,6 @@ export default {
       }
     }
 
-    // Firestore operations
     const loadTodos = async () => {
       if (!user.value) return
 
@@ -104,12 +92,12 @@ export default {
       }
     }
 
-    const addTodo = async () => {
-      if (newTodo.value.trim() === '' || !user.value) return
+    const addTodo = async (text) => {
+      if (!user.value) return
 
       try {
         const todoRef = await addDoc(collection(db, 'todos'), {
-          text: newTodo.value,
+          text,
           completed: false,
           priority: 'normal',
           timestamp: new Date().getTime(),
@@ -118,13 +106,11 @@ export default {
 
         todos.value.push({
           id: todoRef.id,
-          text: newTodo.value,
+          text,
           completed: false,
           priority: 'normal',
           timestamp: new Date().getTime(),
         })
-
-        newTodo.value = ''
       } catch (error) {
         console.error('Error al añadir todo:', error)
       }
@@ -186,7 +172,6 @@ export default {
     return {
       user,
       todos,
-      newTodo,
       addTodo,
       toggleComplete,
       changePriority,
@@ -199,21 +184,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.logout-btn {
-  padding: 0.5rem 1rem;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-</style>

@@ -34,7 +34,7 @@ export default {
     },
     collectionName: {
       type: String,
-      default: 'todo',
+      default: 'todos',
     },
   },
 

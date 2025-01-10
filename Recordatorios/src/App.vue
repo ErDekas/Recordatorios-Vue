@@ -130,27 +130,27 @@ export default {
       }
     }
 
-    const toggleComplete = async (todo) => {
+    const toggleComplete = async (todos) => {
       try {
-        await updateDoc(doc(db, 'todos', todo.id), {
-          completed: !todo.completed,
+        await updateDoc(doc(db, 'todos', todos.id), {
+          completed: !todos.completed,
         })
-        todo.completed = !todo.completed
+        todos.completed = !todos.completed
       } catch (error) {
         console.error('Error al actualizar todo:', error)
       }
     }
 
-    const changePriority = async (todo) => {
+    const changePriority = async (todos) => {
       const priorities = ['low', 'normal', 'high']
-      const currentIndex = priorities.indexOf(todo.priority)
+      const currentIndex = priorities.indexOf(todos.priority)
       const newPriority = priorities[(currentIndex + 1) % priorities.length]
 
       try {
-        await updateDoc(doc(db, 'todos', todo.id), {
+        await updateDoc(doc(db, 'todos', todos.id), {
           priority: newPriority,
         })
-        todo.priority = newPriority
+        todos.priority = newPriority
       } catch (error) {
         console.error('Error al cambiar prioridad:', error)
       }
@@ -159,18 +159,18 @@ export default {
     const deleteTodo = async (todoToDelete) => {
       try {
         await deleteDoc(doc(db, 'todos', todoToDelete.id))
-        todos.value = todos.value.filter((todo) => todo.id !== todoToDelete.id)
+        todos.value = todos.value.filter((todos) => todos.id !== todoToDelete.id)
       } catch (error) {
         console.error('Error al eliminar todo:', error)
       }
     }
 
     const clearCompleted = async () => {
-      const completedTodos = todos.value.filter((todo) => todo.completed)
+      const completedTodos = todos.value.filter((todos) => todos.completed)
 
       try {
-        await Promise.all(completedTodos.map((todo) => deleteDoc(doc(db, 'todos', todo.id))))
-        todos.value = todos.value.filter((todo) => !todo.completed)
+        await Promise.all(completedTodos.map((todos) => deleteDoc(doc(db, 'todos', todos.id))))
+        todos.value = todos.value.filter((todos) => !todos.completed)
       } catch (error) {
         console.error('Error al limpiar todos completados:', error)
       }

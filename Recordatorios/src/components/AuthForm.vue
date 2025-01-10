@@ -218,7 +218,7 @@ export default {
 }
 
 input {
-  width: 100%;
+  width: 94%;
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 6px;

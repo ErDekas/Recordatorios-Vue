@@ -15,15 +15,15 @@
         {{ capitalizedPriority }}
       </button>
       {{ todo.text }}
-      <span class="timestamp">{{ timeAgo }}</span>
+      <span class="timestamp">{{ formattedTimeAgo }}</span>
     </span>
     <button class="delete-btn" @click="handleDelete">✕</button>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
-import { auth, db } from '../firebase' // Asegúrate de que esta ruta es correcta
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
+import { auth, db } from '../firebase'
 import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore'
 
 export default {
@@ -39,8 +39,13 @@ export default {
   },
 
   setup(props, { emit }) {
-    const timeAgo = computed(() => {
-      const seconds = Math.floor((new Date() - props.todo.timestamp) / 1000)
+    // Estado local para el timestamp
+    const currentTime = ref(new Date())
+    let timeInterval
+
+    // Función para calcular el tiempo transcurrido
+    const calculateTimeAgo = (timestamp) => {
+      const seconds = Math.floor((currentTime.value - timestamp) / 1000)
       const minutes = Math.floor(seconds / 60)
       const hours = Math.floor(minutes / 60)
       const days = Math.floor(hours / 24)
@@ -49,13 +54,46 @@ export default {
       if (hours > 0) return `Añadido hace ${hours} horas`
       if (minutes > 0) return `Añadido hace ${minutes} minutos`
       return 'Añadido hace un momento'
+    }
+
+    // Computed property para el tiempo formateado
+    const formattedTimeAgo = computed(() => {
+      return calculateTimeAgo(props.todo.timestamp)
+    })
+
+    // Watcher para actualizar la base de datos cuando cambia el timestamp
+    watch(() => props.todo.timestamp, async (newTimestamp, oldTimestamp) => {
+      if (newTimestamp !== oldTimestamp && auth.currentUser) {
+        try {
+          const todoRef = doc(db, props.collectionName, props.todo.id)
+          await updateDoc(todoRef, {
+            timestamp: newTimestamp,
+            updatedAt: new Date()
+          })
+        } catch (error) {
+          console.error('Error al actualizar el timestamp:', error)
+        }
+      }
+    })
+
+    // Actualizar el tiempo actual cada minuto
+    onMounted(() => {
+      timeInterval = setInterval(() => {
+        currentTime.value = new Date()
+      }, 60000) // Actualizar cada minuto
+    })
+
+    // Limpiar el intervalo cuando el componente se desmonta
+    onUnmounted(() => {
+      if (timeInterval) {
+        clearInterval(timeInterval)
+      }
     })
 
     const capitalizedPriority = computed(
-      () => props.todo.priority.charAt(0).toUpperCase() + props.todo.priority.slice(1),
+      () => props.todo.priority.charAt(0).toUpperCase() + props.todo.priority.slice(1)
     )
 
-    // Manejadores de eventos con autenticación y Firestore
     const handleToggleComplete = async () => {
       if (!auth.currentUser) {
         console.error('Usuario no autenticado')
@@ -74,6 +112,7 @@ export default {
         await updateDoc(todoRef, {
           completed: !props.todo.completed,
           updatedAt: new Date(),
+          timestamp: new Date() // Actualizar timestamp al completar
         })
         emit('toggle-complete')
       } catch (error) {
@@ -96,6 +135,7 @@ export default {
         await updateDoc(todoRef, {
           priority: nextPriority,
           updatedAt: new Date(),
+          timestamp: new Date() // Actualizar timestamp al cambiar prioridad
         })
         emit('change-priority', nextPriority)
       } catch (error) {
@@ -119,7 +159,7 @@ export default {
     }
 
     return {
-      timeAgo,
+      formattedTimeAgo,
       capitalizedPriority,
       handleToggleComplete,
       handlePriorityChange,

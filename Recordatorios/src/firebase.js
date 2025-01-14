@@ -1,15 +1,16 @@
+// filepath: /home/deka/Recordatorios-Vue/Recordatorios/src/firebase.js
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyA3uSmnF0oHbCr4RUJbUgM0JfD7W6vE41I',
-  authDomain: 'recordatorios-deka.firebaseapp.com',
-  projectId: 'recordatorios-deka',
-  storageBucket: 'recordatorios-deka.firebasestorage.app',
-  messagingSenderId: '231646103911',
-  appId: '1:231646103911:web:dfdafa52b338063abf87c2',
-  measurementId: 'G-2TPQN4HK79',
+  apiKey: import.meta.env.FIREBASE_API_KEY,
+  authDomain: import.meta.env.FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.FIREBASE_APP_ID,
+  measurementId: import.meta.env.FIREBASE_MEASUREMENT_ID,
 }
 
 const app = initializeApp(firebaseConfig)

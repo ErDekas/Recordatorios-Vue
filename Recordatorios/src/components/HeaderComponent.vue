@@ -1,14 +1,28 @@
 <template>
   <div class="header">
-    <h1>Proyecto Vue.js - Pablo Linares</h1>
+    <h1>Proyecto Vue.js - {{ userName }}</h1>
     <button @click="$emit('logout')" class="logout-btn">Cerrar sesión</button>
   </div>
 </template>
 
 <script>
+import { getAuth } from "firebase/auth";
+
 export default {
   name: 'HeaderComponent',
   emits: ['logout'],
+  data() {
+    return {
+      userName: ''
+    };
+  },
+  created() {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      this.userName = user.displayName;
+    }
+  }
 }
 </script>
 

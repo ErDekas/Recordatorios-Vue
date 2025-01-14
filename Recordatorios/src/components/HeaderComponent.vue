@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <h1>Proyecto Vue.js - {{ userName }}</h1>
+    <h1>Proyecto Vue.js {{ userName }}</h1>
     <button @click="$emit('logout')" class="logout-btn">Cerrar sesión</button>
   </div>
 </template>

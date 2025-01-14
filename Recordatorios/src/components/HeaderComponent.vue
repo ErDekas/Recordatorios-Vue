@@ -16,12 +16,13 @@ export default {
       userName: ''
     };
   },
-  created() {
+  async created() {
     const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      this.userName = user.displayName;
-    }
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        this.userName = user.displayName;
+      }
+    });
   }
 }
 </script>

@@ -1,4 +1,3 @@
-// filepath: /home/deka/Recordatorios-Vue/Recordatorios/src/firebase.js
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'

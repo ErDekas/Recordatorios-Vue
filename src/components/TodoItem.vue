@@ -1,24 +1,26 @@
 <template>
-  <div class="todo-item" :class="{ completed: todo.completed }">
-    <input
-      type="checkbox"
-      class="todo-checkbox"
-      :checked="todo.completed"
-      @change="handleToggleComplete"
-    />
-    <span class="todo-text">
-      <button
-        class="priority-btn"
-        :class="`priority-${todo.priority}`"
-        @click="handlePriorityChange"
-      >
-        {{ capitalizedPriority }}
-      </button>
-      {{ todo.text }}
-      <span class="timestamp">{{ formattedTimeAgo }}</span>
-    </span>
-    <button class="delete-btn" @click="handleDelete">✕</button>
-  </div>
+  <Transition name="fade">
+    <div class="todo-item" :class="{ completed: todo.completed }" v-if="!isDeleting">
+      <input
+        type="checkbox"
+        class="todo-checkbox"
+        :checked="todo.completed"
+        @change="handleToggleComplete"
+      />
+      <span class="todo-text">
+        <button
+          class="priority-btn"
+          :class="`priority-${todo.priority}`"
+          @click="handlePriorityChange"
+        >
+          {{ capitalizedPriority }}
+        </button>
+        {{ todo.text }}
+        <span class="timestamp">{{ formattedTimeAgo }}</span>
+      </span>
+      <button class="delete-btn" @click="handleDelete">✕</button>
+    </div>
+  </Transition>
 </template>
 
 <script>
@@ -39,7 +41,7 @@ export default {
   },
 
   setup(props, { emit }) {
-    // Estado local para el timestamp
+    const isDeleting = ref(false)
     const currentTime = ref(new Date())
     let timeInterval
 
@@ -68,7 +70,7 @@ export default {
           const todoRef = doc(db, props.collectionName, props.todo.id)
           await updateDoc(todoRef, {
             timestamp: newTimestamp,
-            updatedAt: new Date()
+            updatedAt: new Date(),
           })
         } catch (error) {
           console.error('Error al actualizar el timestamp:', error)
@@ -111,7 +113,7 @@ export default {
 
         await updateDoc(todoRef, {
           completed: !props.todo.completed,
-          updatedAt: new Date(),
+          updatedAt: new Date().getTime(),
           timestamp: new Date() // Actualizar timestamp al completar
         })
         emit('toggle-complete')
@@ -150,11 +152,16 @@ export default {
       }
 
       try {
-        const todoRef = doc(db, props.collectionName, props.todo.id)
-        await deleteDoc(todoRef)
-        emit('delete-todo')
+        isDeleting.value = true
+        // Esperamos a que termine la transición antes de eliminar
+        setTimeout(async () => {
+          const todoRef = doc(db, props.collectionName, props.todo.id)
+          await deleteDoc(todoRef)
+          emit('delete-todo')
+        }, 300) // Este tiempo debe coincidir con la duración de la transición
       } catch (error) {
         console.error('Error al eliminar el todo:', error)
+        isDeleting.value = false // Restauramos el estado si hay error
       }
     }
 
@@ -164,7 +171,19 @@ export default {
       handleToggleComplete,
       handlePriorityChange,
       handleDelete,
+      isDeleting,
     }
   },
 }
 </script>
+<style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

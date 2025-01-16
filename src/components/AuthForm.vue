@@ -1,50 +1,57 @@
 <template>
   <div class="auth-container">
     <div class="auth-box">
-      <h2 class="auth-title">{{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}</h2>
+      <div v-if="!showPhoneForm">
+        <h2 class="auth-title">{{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}</h2>
 
-      <!-- Botones de redes sociales -->
-      <div class="social-buttons">
-        <button @click="signInWithGoogle" class="social-button google-button">
-          <img src="https://www.google.com/favicon.ico" alt="Google" class="social-icon" />
-          Continuar con Google
-        </button>
+        <!-- Botones de redes sociales -->
+        <div class="social-buttons">
+          <button @click="signInWithGoogle" class="social-button google-button">
+            <img src="https://www.google.com/favicon.ico" alt="Google" class="social-icon" />
+            Continuar con Google
+          </button>
 
-        <button @click="signInWithFacebook" class="social-button facebook-button">
-          <img src="https://www.facebook.com/favicon.ico" alt="Facebook" class="social-icon" />
-          Continuar con Facebook
-        </button>
+          <button @click="signInWithFacebook" class="social-button facebook-button">
+            <img src="https://www.facebook.com/favicon.ico" alt="Facebook" class="social-icon" />
+            Continuar con Facebook
+          </button>
 
-        <button @click="signInWithGithub" class="social-button github-button">
-          <img src="https://github.com/favicon.ico" alt="GitHub" class="social-icon" />
-          Continuar con GitHub
-        </button>
-      </div>
-
-      <div class="divider">
-        <span>o</span>
-      </div>
-
-      <form @submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" v-model="email" placeholder="nombre@ejemplo.com" required />
+          <button @click="signInWithGithub" class="social-button github-button">
+            <img src="https://github.com/favicon.ico" alt="GitHub" class="social-icon" />
+            Continuar con GitHub
+          </button>
         </div>
-        <div class="form-group">
-          <label>Contraseña</label>
-          <input type="password" v-model="password" placeholder="Ingresa tu contraseña" required />
-        </div>
-        <button type="submit" class="auth-button">
-          {{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}
-        </button>
-      </form>
 
-      <p class="toggle-auth">
-        {{ isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
-        <span @click="isLogin = !isLogin">
-          {{ isLogin ? 'Regístrate' : 'Inicia sesión' }}
-        </span>
-      </p>
+        <div class="divider">
+          <span>o</span>
+        </div>
+
+        <form @submit.prevent="handleSubmit">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" v-model="email" placeholder="nombre@ejemplo.com" required />
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input
+              type="password"
+              v-model="password"
+              placeholder="Ingresa tu contraseña"
+              required
+            />
+          </div>
+          <button type="submit" class="auth-button">
+            {{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}
+          </button>
+        </form>
+
+        <p class="toggle-auth">
+          {{ isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
+          <span @click="isLogin = !isLogin">
+            {{ isLogin ? 'Regístrate' : 'Inicia sesión' }}
+          </span>
+        </p>
+      </div>
     </div>
   </div>
 </template>

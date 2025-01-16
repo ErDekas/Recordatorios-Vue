@@ -1,8 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AuthForm from '../components/AuthForm.vue'
 import Dashboard from '../components/DashboardComponent.vue'
+import Landing from '../components/LandingPage.vue'
 
 const routes = [
+  {
+    path: '/',
+    redirect: 'landing',
+  },
+  {
+    path: '/landing',
+    name: 'Landing',
+    component: Landing,
+  },
   {
     path: '/',
     redirect: '/login',

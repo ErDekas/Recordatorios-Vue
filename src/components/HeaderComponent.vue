@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <h1>Proyecto Vue.js {{ userName }}</h1>
-    <button @click="$emit('logout')" class="logout-btn">Cerrar sesión</button>
+    <button v-if="isAuthenticated" @click="$emit('logout')" class="logout-btn">Cerrar sesión</button>
   </div>
 </template>
 
@@ -13,7 +13,8 @@ export default {
   emits: ['logout'],
   data() {
     return {
-      userName: ''
+      userName: '',
+      isAuthenticated: false
     };
   },
   async created() {
@@ -21,6 +22,9 @@ export default {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         this.userName = user.displayName;
+        this.isAuthenticated = true;
+      } else {
+        this.isAuthenticated = false;
       }
     });
   }

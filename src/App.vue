@@ -17,9 +17,12 @@ export default {
         router.push('/dashboard') // Redirige al dashboard.
       } else {
         localStorage.removeItem('user')
-        router.push('/login') // Redirige al login.
+        const currentRoute = router.currentRoute.value
+        if (currentRoute.path !== '/login') {
+          router.push('/landing') // Redirige al landing si no está en la página de login.
+        }
       }
     })
-  },
+  }
 }
 </script>

@@ -3,7 +3,7 @@ body {
   color: #fff;
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 20px;
+  padding: 0;
 }
 
 .container {
@@ -51,6 +51,7 @@ input[type='text'] {
   position: relative;
   animation: slideIn 0.3s ease-out;
   transition: transform 0.2s;
+  left: 1.5%;
 }
 
 @keyframes slideIn {

@@ -1,6 +1,11 @@
 <template>
   <Transition name="fade">
-    <div class="todo-item" :class="{ completed: todo.completed }" v-if="!isDeleting">
+    <div 
+      class="todo-item" 
+      :class="{ completed: todo.completed }" 
+      v-show="!isDeleting"
+      :key="todo.id"
+    >
       <input
         type="checkbox"
         class="todo-checkbox"
@@ -153,15 +158,19 @@ export default {
 
       try {
         isDeleting.value = true
+        
         // Esperamos a que termine la transición antes de eliminar
-        setTimeout(async () => {
-          const todoRef = doc(db, props.collectionName, props.todo.id)
-          await deleteDoc(todoRef)
-          emit('delete-todo')
-        }, 300) // Este tiempo debe coincidir con la duración de la transición
+        await new Promise(resolve => {
+          setTimeout(async () => {
+            const todoRef = doc(db, props.collectionName, props.todo.id)
+            await deleteDoc(todoRef)
+            emit('delete-todo', props.todo)
+            resolve()
+          }, 500)
+        })
       } catch (error) {
         console.error('Error al eliminar el todo:', error)
-        isDeleting.value = false // Restauramos el estado si hay error
+        isDeleting.value = false
       }
     }
 
@@ -176,14 +185,20 @@ export default {
   },
 }
 </script>
-<style>
+<style scoped>
+.todo-item {
+  position: relative;
+  /* Resto de tus estilos actuales */
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+  transform: translateX(-30px);
 }
 </style>

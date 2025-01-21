@@ -21,7 +21,7 @@ export default {
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
       if (user) {
-        this.userName = user.displayName;
+        this.userName = user.displayName || user.email;
         this.isAuthenticated = true;
       } else {
         this.isAuthenticated = false;

@@ -4,6 +4,7 @@
       type="text"
       v-model="todoText"
       placeholder="¿Qué quieres recordar?"
+      maxlength="22"
       @keyup.enter="handleSubmit"
     />
   </div>

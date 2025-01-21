@@ -29,5 +29,13 @@ coverage
 
 *.tsbuildinfo
 
-# Enviiroment variables
+# Enviroment variables
 .env
+
+# Gitignore
+.gitignore
+
+
+# Package json
+package-lock.json
+

@@ -53,7 +53,7 @@ import { auth, db } from '../firebase'
 import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore'
 import emailjs from '@emailjs/browser'
 
-const userId = import.meta.env.EMAILJS_USER_ID
+const userId = "77V4-gSSreUvCfKT8"
 emailjs.init(userId)
 
 export default {
@@ -73,8 +73,8 @@ export default {
     const currentTime = ref(new Date())
     const reminderTime = ref(props.todo.reminderTime || '')
     const emailSent = ref(false)
-    const serviceId = import.meta.env.EMAILJS_SERVICE_ID
-    const templateId = import.meta.env.EMAILJS_TEMPLATE_ID
+    const serviceId = "service_vl9m76m"
+    const templateId = "template_zhsjskh"
     let timeInterval
     let reminderTimeout
 

@@ -34,6 +34,10 @@
           <label>Contraseña</label>
           <input type="password" v-model="password" placeholder="Ingresa tu contraseña" required />
         </div>
+        <div v-if="!isLogin" class="form-group">
+          <label>Confirmar Contraseña</label>
+          <input type="password" v-model="confirmPassword" placeholder="Confirma tu contraseña" required />
+        </div>
         <button type="submit" class="auth-button">
           {{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}
         </button>
@@ -65,6 +69,7 @@ export default {
   setup() {
     const email = ref('')
     const password = ref('')
+    const confirmPassword = ref('')
     const isLogin = ref(true)
     const error = ref('')
 
@@ -98,12 +103,16 @@ export default {
     const handleSubmit = async () => {
       error.value = ''
       try {
+        if (!isLogin.value && password.value !== confirmPassword.value) {
+          error.value = 'Las contraseñas no coinciden'
+          return
+        }
         if (isLogin.value) {
           await signInWithEmailAndPassword(auth, email.value, password.value)
         } else {
           await createUserWithEmailAndPassword(auth, email.value, password.value)
-        }
-      } catch (err) {
+          }
+        } catch (err) {
         error.value = err.message
       }
     }
@@ -111,6 +120,7 @@ export default {
     return {
       email,
       password,
+      confirmPassword,
       isLogin,
       handleSubmit,
       signInWithGoogle,
